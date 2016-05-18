@@ -30,7 +30,7 @@ void init_GSM_uart()
     UBRR1L = BAUDRATE;                           // set baud rate
     UCSR1B |= (1<<TXEN1)|(1<<RXEN1);              // enable receiver, transmitter
     UCSR1C |= (1<<UCSZ10)|(1<<UCSZ11);            // 8bit data format
-    UCSR1B |= (1<<RXCIE1);                         // enable receive complete interrupts (GPS uart)
+    UCSR1B |= (1<<RXCIE1);                         // enable receive complete interrupts (GSM uart)
 }
 
 /***************************************************/
