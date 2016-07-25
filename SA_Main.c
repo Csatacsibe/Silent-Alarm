@@ -114,11 +114,7 @@ int main(void)
 
         if(button(BUTT1))
         {
-            print(GSM,"%s = %d + %d","three",1,2);
-            _delay_ms(10);
-            print(PC,"%s + %d","test",1);
-            _delay_ms(10);
-            print(LCD,"%d %d %d",1992,6,1);
+
         }
 
         if(button(BUTT2))
