@@ -24,7 +24,7 @@
 /******** prototypes ********/
 
 uint8_t     GSM_get_state();
-uint8_t     get_SMS_slot(char* buffer);
+void        get_SMS_slot(char* buffer, uint8_t* slot);
 void        read_slot(uint8_t slot);
 
 uint8_t     parse_SMS(char* data, SMS_t* msg);

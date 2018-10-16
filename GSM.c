@@ -119,7 +119,7 @@ void GSM_process_response()
     }
     else if(strstr(data,"+CMTI"))
     {
-        message.slot = get_SMS_slot(data);
+        get_SMS_slot(data, &message.slot);
         read_slot(message.slot);
     }
     else if(strstr(data,"+CMGR"))
@@ -149,7 +149,7 @@ void GSM_process_response()
     GSM_uart.status = WAITING;
 }
 
-uint8_t get_SMS_slot(char* buffer)
+void get_SMS_slot(char* buffer, uint8_t* slot)
 {
     uint8_t i = 0;
 
@@ -158,7 +158,7 @@ uint8_t get_SMS_slot(char* buffer)
         i++;
     }
 
-    return atoi(buffer + i + 1);
+    *slot = atoi(buffer + i + 1);
 }
 
 void read_slot(uint8_t slot)

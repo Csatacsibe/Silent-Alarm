@@ -36,7 +36,7 @@ ISR(TIMER1_OVF_vect)
 
 ISR(TIMER0_COMP_vect)
 {
-    dev_stat.milis++;
+    dev_stat.millis++;
     PORTC ^= (1<<HEADER0);
 }
 
@@ -54,7 +54,7 @@ ISR(USART1_RX_vect)
         GSM_uart.occured++;
         if(GSM_uart.occured == GSM_uart.occurrence)
         {
-            GSM_uart.buffer[GSM_uart.index]   = '\0';
+            GSM_uart.buffer[GSM_uart.index] = '\0';
             GSM_uart.occured    = 0;
             GSM_uart.occurrence = 1;
             GSM_uart.status     = DONE;
@@ -83,12 +83,12 @@ ISR(SPI_STC_vect)
     // is complete.
 }
 
-void wrap_function()
+void gsm_ri_handler()
 {
     switch_LED(LED2, TOGGLE);
 }
 
-void wrap_function2()
+void alarm_button_handler()
 {
     new_msg_received = FALSE;
 }
@@ -104,13 +104,12 @@ int main(void)
     init_global_variables();
 
     switch_LCD();
-    config_GSM();
     switch_LED(LED1, ON);
 
     while(1)
     {
         set_DDRAM_address(LCD_row_1);
-        print(LCD,"%d",dev_stat.milis);
+        print(LCD,"%d",dev_stat.millis);
 
         if(button(BUTT1))
         {
@@ -156,9 +155,9 @@ int main(void)
             _delay_ms(2000);
         }
 
-        interrupt_handler((uint8_t*)&int_flags.butt, wrap_function2);
+        interrupt_handler((uint8_t*)&int_flags.butt, alarm_button_handler);
         interrupt_handler((uint8_t*)&int_flags.sw, switch_GSM);
-        interrupt_handler((uint8_t*)&int_flags.GSM, wrap_function);
+        interrupt_handler((uint8_t*)&int_flags.GSM, gsm_ri_handler);
 
     }
     return 0;

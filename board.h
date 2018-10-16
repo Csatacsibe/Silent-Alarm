@@ -132,7 +132,6 @@ void          vprint(periphery_t target, const char *fmt, va_list argp);
 
 void          set_time_out(uint8_t value);
 
-//void           init_timer1();
 void          init_timer0();
 void          init_global_variables();
 

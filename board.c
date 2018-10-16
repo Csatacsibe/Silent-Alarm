@@ -100,30 +100,29 @@ void init_global_variables()
     GSM_uart.index      = 0;
     GSM_uart.occurrence = 1;
     GSM_uart.occured    = 0;
-    GSM_uart.status        = WAITING;
+    GSM_uart.status     = WAITING;
 
     dev_stat.LCD_pwr = LCD_get_state();
     dev_stat.GSM_pwr = GSM_get_state();
     dev_stat.GSM_configured = FALSE;
     dev_stat.LCD_configured = FALSE;
-    dev_stat.milis = 0;
+    dev_stat.millis = 0;
     dev_stat.is_date_displayed = FALSE;
 
-    date.year       = 0;
-    date.month       = 0;
-    date.day       = 0;
-    date.hour       = 0;
-    date.min       = 0;
-    date.sec       = 0;
-    date.zone       = 0;
+    date.year  = 0;
+    date.month = 0;
+    date.day   = 0;
+    date.hour  = 0;
+    date.min   = 0;
+    date.sec   = 0;
+    date.zone  = 0;
 
-    message.slot = '0';
+    message.slot = 0;
 }
 
 uint8_t button(char button)
 {
     unsigned int debounce[8];
-
     unsigned int i,check = 0;
 
         for(i=0;i<8;i++)

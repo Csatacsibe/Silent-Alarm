@@ -48,7 +48,7 @@ typedef struct device_status
     uint8_t  GSM_pwr;        // GSM power status
     uint8_t  GSM_configured;
     uint8_t  LCD_configured;
-    uint32_t milis;
+    uint32_t millis;
     uint8_t  is_date_displayed;
 }device_status_t;
 
