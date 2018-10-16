@@ -109,7 +109,7 @@ int main(void)
     while(1)
     {
         set_DDRAM_address(LCD_row_1);
-        print(LCD,"%d",dev_stat.millis);
+        //print(LCD,"%d",dev_stat.millis);
 
         if(button(BUTT1))
         {
