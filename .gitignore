@@ -2,3 +2,7 @@ SilentAlarm.aps
 SilentAlarm.aws
 /default
 /archive
+/dep
+*.o
+SilentAlarm.*
+.vscode/tasks.json

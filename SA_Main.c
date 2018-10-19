@@ -85,12 +85,12 @@ ISR(SPI_STC_vect)
 
 void gsm_ri_handler()
 {
-    switch_LED(LED2, TOGGLE);
+	new_msg_received = FALSE;    
 }
 
 void alarm_button_handler()
 {
-    new_msg_received = FALSE;
+	switch_LED(LED2, TOGGLE);
 }
 
 int main(void)
@@ -128,31 +128,7 @@ int main(void)
 
         if(PINE & (1<<SW2))
         {
-            GSM_send_str(cmd_del_all_SMS);
-            wait_for('K', 36);
-            GSM_send_str(cmd_list_SMS);
-        }
 
-        if(new_msg_received == TRUE)
-        {
-            LCD_clear_display();
-            LCD_print_str("From: ");
-            set_DDRAM_address(LCD_row_2 + 4);
-            LCD_print_str("+");
-            LCD_print_str(message.sender);
-            _delay_ms(2000);
-
-            LCD_clear_display();
-            LCD_print_str("At: ");
-            set_DDRAM_address(LCD_row_1 + 4);
-            LCD_print_str(message.date_str);
-            set_DDRAM_address(LCD_row_2 + 8);
-            LCD_print_str(message.time_str);
-            _delay_ms(2000);
-
-            LCD_clear_display();
-            LCD_print_str(message.text);
-            _delay_ms(2000);
         }
 
         interrupt_handler((uint8_t*)&int_flags.butt, alarm_button_handler);
