@@ -216,7 +216,7 @@ void switch_GSM()
     PORTD &= ~(1<<GSM_ON_OFF);
     _delay_ms(1100);
     PORTD |= (1<<GSM_ON_OFF);
-    _delay_ms(1500);
+    _delay_ms(5000);
     dev_stat.GSM_pwr = GSM_get_state();
 
     if(dev_stat.GSM_pwr)

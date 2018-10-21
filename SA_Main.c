@@ -103,14 +103,10 @@ int main(void)
     sei();
     init_global_variables();
 
-    switch_LCD();
     switch_LED(LED1, ON);
 
     while(1)
     {
-        set_DDRAM_address(LCD_row_1);
-        //print(LCD,"%d",dev_stat.millis);
-
         if(button(BUTT1))
         {
 
@@ -118,7 +114,7 @@ int main(void)
 
         if(button(BUTT2))
         {
-
+            GSM_send_SMS("Teszt text","32301111111");
         }
 
         if(PINE & (1<<SW1))
@@ -128,7 +124,7 @@ int main(void)
 
         if(PINE & (1<<SW2))
         {
-
+            switch_LCD();
         }
 
         interrupt_handler((uint8_t*)&int_flags.butt, alarm_button_handler);
