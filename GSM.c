@@ -1,5 +1,10 @@
 #include "board.h"
 
+static void init_GSM_uart();
+static void GSM_uart_transmit(unsigned char data);
+static unsigned char GSM_uart_recieve();
+static uint8_t config_GSM();
+
 uint8_t GSM_get_state()
 {
     print(GSM,"%s\r",cmd_GSM_test);
@@ -13,40 +18,41 @@ uint8_t GSM_get_state()
     }
 }
 
+
+/***************************************************/
+static void init_GSM_uart()
+{
+    UBRR1H = (BAUDRATE>>8);                      // shift the register right by 8 bits
+    UBRR1L = BAUDRATE;                           // set baud rate
+    UCSR1B |= (1<<TXEN1)|(1<<RXEN1);             // enable receiver, transmitter
+    UCSR1C |= (1<<UCSZ10)|(1<<UCSZ11);           // 8bit data format
+    UCSR1B |= (1<<RXCIE1);                       // enable receive complete interrupts (GSM uart)
+}
+
 /***************************************************/
 void init_GSM()
 {
     DDRD |= (1<<GSM_RTS) | (1<<GSM_ON_OFF) | (1<<GSM_EM_OFF);    // outputs
-    DDRD &= ~(1<<GSM_CTS);                                        // inputs
-    PORTD |= (1<<GSM_ON_OFF) | (1<<GSM_EM_OFF);                    // default high
+    DDRD &= ~(1<<GSM_CTS);                                       // inputs
+    PORTD |= (1<<GSM_ON_OFF) | (1<<GSM_EM_OFF);                  // default high
 
     init_GSM_uart();
 }
 
 /***************************************************/
-void init_GSM_uart()
-{
-    UBRR1H = (BAUDRATE>>8);                      // shift the register right by 8 bits
-    UBRR1L = BAUDRATE;                           // set baud rate
-    UCSR1B |= (1<<TXEN1)|(1<<RXEN1);              // enable receiver, transmitter
-    UCSR1C |= (1<<UCSZ10)|(1<<UCSZ11);            // 8bit data format
-    UCSR1B |= (1<<RXCIE1);                         // enable receive complete interrupts (GSM uart)
-}
-
-/***************************************************/
-uint8_t config_GSM()
+static uint8_t config_GSM()
 {
     print(GSM,"%s\r",cmd_echo_mode);
     wait_for('K', 36);                              // wait for OK or ERROR
     print(GSM,"%s=%d\r",cmd_SMS_format,1);
     wait_for('K', 36);                              // wait for OK or ERROR
-    return TRUE;                                  // TODO: handle error
+    return TRUE;                                    // TODO: handle error
 }
 
 
 /***************************************************/
 
-void GSM_uart_transmit(unsigned char data)
+static void GSM_uart_transmit(unsigned char data)
 {
     while (!( UCSR1A & (1<<UDRE1)));               // wait while register is free
     UDR1 = data;                                   // load data in the register
@@ -54,7 +60,7 @@ void GSM_uart_transmit(unsigned char data)
 
 /***************************************************/
 
-unsigned char GSM_uart_recieve()
+static unsigned char GSM_uart_recieve()
 {
     while(!(UCSR1A) & (1<<RXC1));                  // wait while data is being received
     return UDR1;                                   // return 8-bit data

@@ -45,7 +45,7 @@ typedef struct uart_rx
 typedef struct device_status
 {
     uint8_t  LCD_pwr;         // LCD power status
-    uint8_t  GSM_pwr;        // GSM power status
+    uint8_t  GSM_pwr;         // GSM power status
     uint8_t  GSM_configured;
     uint8_t  LCD_configured;
     uint32_t millis;

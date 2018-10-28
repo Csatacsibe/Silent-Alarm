@@ -18,34 +18,19 @@
 #define cmd_list_SMS            (char*){"AT+CMGL=\"ALL\",0\r"}
 #define cmd_del_all_SMS         (char*){"AT+QMGDA=\"DEL ALL\"\r"}
 
-/** GSM state EEPROM address **/
-//#define GSM_st_add        1
-
 /******** prototypes ********/
-
-uint8_t     GSM_get_state();
-void        get_SMS_slot(char* buffer, uint8_t* slot);
-void        read_slot(uint8_t slot);
-
-uint8_t     parse_SMS(char* data, SMS_t* msg);
-
 void        init_GSM(void);
-void        init_GSM_uart(void);
-uint8_t     config_GSM(void);
-
-unsigned char GSM_uart_recieve(void);
-void          GSM_uart_transmit(unsigned char data);
-
 void        GSM_send_cmd(char* cmd, char* param);
 void        GSM_send_str(char* cmd);
-uint8_t     GSM_get_str(char start, char end, uint8_t value);
-
 void        GSM_process_response();
 
 uint8_t     GSM_send_SMS(char* text,char* number);
-uint8_t     GSM_set_alarm(uint8_t state, char* date, uint8_t repeat, uint8_t power);
+uint8_t     parse_SMS(char* data, SMS_t* msg);
+void        get_SMS_slot(char* buffer, uint8_t* slot);
+void        read_slot(uint8_t slot);
 
 uint8_t     wait_for(char c, uint8_t value);
+uint8_t     GSM_get_state();
 void        switch_GSM(void);
 void        GSM_em_shut_down(void);
 

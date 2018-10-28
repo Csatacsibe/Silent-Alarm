@@ -76,13 +76,6 @@ ISR(USART1_RX_vect)
     }
 }
 
-ISR(SPI_STC_vect)
-{
-    // Code to execute
-    // whenever transmission/reception
-    // is complete.
-}
-
 void gsm_ri_handler()
 {
 	new_msg_received = FALSE;    
@@ -98,7 +91,6 @@ int main(void)
     init_board();
     init_LCD();
     init_GSM();
-    //init_RF();
 
     sei();
     init_global_variables();

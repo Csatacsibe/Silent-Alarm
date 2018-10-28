@@ -1,5 +1,11 @@
 #include "board.h"
 
+static void init_timer0();
+static void init_PC_uart();
+static void PC_uart_transmit(unsigned char data);
+static unsigned char PC_uart_recieve();
+static void vprint(periphery_t target, const char *fmt, va_list argp);
+
 void init_board()
 {
     OSCCAL = CLK_8MHZ;
@@ -10,7 +16,7 @@ void init_board()
     DDRB |= (1<<BUZZER);
     DDRC |= (1<<HEADER0) | (1<<HEADER1);
 
-    TCCR1B |=(1<<CS10);                  // time-out timer, no prescale
+    TCCR1B |=(1<<CS10);               // time-out timer, no prescale
 
     EIMSK |= (1<<INT6) | (1<<INT5) | (1<<INT4);
     EICRB |= (1<<ISC40);              // INT on any logic level change, SW
@@ -18,23 +24,24 @@ void init_board()
     EICRB |= (1<<ISC61) | (1<<ISC60); // INT on rising edge, BUTTON
 
     init_PC_uart();
+    init_timer0();
 }
 
-void init_PC_uart()
+static void init_PC_uart()
 {
     UBRR0H = (BAUDRATE>>8);                      // shift the register right by 8 bits
     UBRR0L = BAUDRATE;                           // set baud rate
     UCSR0B |= (1<<TXEN0)|(1<<RXEN0);             // enable receiver and transmitter
-    UCSR0C |= (1<<UCSZ00)|(1<<UCSZ01);            // 8bit data format
+    UCSR0C |= (1<<UCSZ00)|(1<<UCSZ01);           // 8bit data format
 }
 
-void PC_uart_transmit(unsigned char data)
+static void PC_uart_transmit(unsigned char data)
 {
     while (!( UCSR0A & (1<<UDRE0)));
     UDR0 = data;
 }
 
-unsigned char PC_uart_recieve()
+static unsigned char PC_uart_recieve()
 {
     while(!(UCSR0A) & (1<<RXC0));
     return UDR0;
@@ -62,7 +69,7 @@ void set_time_out(uint8_t value)
     TIMSK |= (1<<TOIE1);
 }
 
-void init_timer0()
+static void init_timer0()
 {
     // Timer Mode 4: Clear Timer on Compare match (CTC)
     TCCR0 |= (1<<WGM01);
@@ -194,7 +201,7 @@ void interrupt_handler(uint8_t* flag, void (*handler_func)(void))
     }
 }
 
-void vprint(periphery_t target, const char *fmt, va_list argp)
+static void vprint(periphery_t target, const char *fmt, va_list argp)
 {
     char string[200];
     if(0 < vsprintf(string,fmt,argp))

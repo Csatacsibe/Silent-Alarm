@@ -37,7 +37,7 @@ HEX_EEPROM_FLAGS += --change-section-lma .eeprom=0 --no-change-warnings
 
 
 ## Objects that must be built in order to link
-OBJECTS = SA_Main.o LCD.o GSM.o board.o time.o RF.o 
+OBJECTS = SA_Main.o LCD.o GSM.o board.o time.o
 
 ## Objects explicitly added by the user
 LINKONLYOBJECTS = 
@@ -59,9 +59,6 @@ board.o: board.c
 	$(CC) $(INCLUDES) $(CFLAGS) -c  $<
 
 time.o: time.c
-	$(CC) $(INCLUDES) $(CFLAGS) -c  $<
-
-RF.o: RF.c
 	$(CC) $(INCLUDES) $(CFLAGS) -c  $<
 
 ##Link
