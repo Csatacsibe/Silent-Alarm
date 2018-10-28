@@ -7,3 +7,6 @@ SilentAlarm.aws
 SilentAlarm.*
 .vscode/tasks.json
 .vscode/c_cpp_properties.json
+e_fuse_val.hex
+high_fuse_val.hex
+low_fuse_val.hex

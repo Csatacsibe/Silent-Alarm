@@ -7,6 +7,8 @@ volatile uart_rx_t         GSM_uart;
 SMS_t                      message;
 date_t                     date;
 uint8_t                    new_msg_received = FALSE;
+volatile input_t           button1;
+volatile input_t           button2;
 
 ISR(ALARM_BUTT_ISR)
 {
@@ -36,8 +38,10 @@ ISR(TIMER1_OVF_vect)
 
 ISR(TIMER0_COMP_vect)
 {
-    dev_stat.millis++;
     PORTC ^= (1<<HEADER0);
+
+    debounce_input(&button1);
+    debounce_input(&button2);
 }
 
 ISR(USART1_RX_vect)
@@ -86,12 +90,23 @@ void alarm_button_handler()
 	switch_LED(LED2, TOGGLE);
 }
 
+void button1_handler()
+{
+    switch_LED(LED1, TOGGLE);
+}
+
+void button2_handler()
+{
+    switch_LED(LED2, TOGGLE);
+}
+
 int main(void)
 {
     init_board();
     init_LCD();
     init_GSM();
 
+    
     sei();
     init_global_variables();
 
@@ -99,16 +114,6 @@ int main(void)
 
     while(1)
     {
-        if(button(BUTT1))
-        {
-
-        }
-
-        if(button(BUTT2))
-        {
-            GSM_send_SMS("Teszt text","32301111111");
-        }
-
         if(PINE & (1<<SW1))
         {
             print(GSM,"%s?\r",cmd_get_time);
@@ -116,13 +121,14 @@ int main(void)
 
         if(PINE & (1<<SW2))
         {
-            switch_LCD();
+
         }
 
         interrupt_handler((uint8_t*)&int_flags.butt, alarm_button_handler);
         interrupt_handler((uint8_t*)&int_flags.sw, switch_GSM);
         interrupt_handler((uint8_t*)&int_flags.GSM, gsm_ri_handler);
-
+        interrupt_handler((uint8_t*)&int_flags.butt1, button1_handler);
+        interrupt_handler((uint8_t*)&int_flags.butt2, button2_handler);
     }
     return 0;
 }

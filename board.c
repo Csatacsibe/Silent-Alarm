@@ -89,17 +89,28 @@ static void init_timer0()
 //
 ///////////////////////////////////////////////////////////////
 
-
 void init_global_variables()
 {
     timer1.ovf_cnt  = 0;
     timer1.cnt_max  = 0;
     timer1.time_out = FALSE;
 
+    button1.counter   = 0;
+    button1.pin       = BUTT1;
+    button1.port      = &PING;
+    button1.is_active = &(int_flags.butt1);
+
+    button2.counter   = 0;
+    button2.pin       = BUTT2;
+    button2.port      = &PING;
+    button2.is_active = &(int_flags.butt2);
+
     int_flags.butt   = FALSE;
     int_flags.sw     = FALSE;
     int_flags.GSM    = FALSE;
-    int_flags.timer1 = (uint8_t*)&(timer1.time_out);
+    int_flags.timeout = FALSE;
+    int_flags.butt1   = FALSE;
+    int_flags.butt2   = FALSE;
 
     GSM_uart.buffer[0]  = '\0';
     GSM_uart.begin      = '\n';
@@ -113,7 +124,6 @@ void init_global_variables()
     dev_stat.GSM_pwr = GSM_get_state();
     dev_stat.GSM_configured = FALSE;
     dev_stat.LCD_configured = FALSE;
-    dev_stat.millis = 0;
     dev_stat.is_date_displayed = FALSE;
 
     date.year  = 0;
@@ -127,38 +137,22 @@ void init_global_variables()
     message.slot = 0;
 }
 
-uint8_t button(char button)
+void debounce_input(input_t* input)
 {
-    unsigned int debounce[8];
-    unsigned int i,check = 0;
-
-        for(i=0;i<8;i++)
+    if (((*(input->port)) & (1<<input->pin))) 
+    {
+        input->counter++;
+        if (100 == input->counter)
         {
-            if((PING & (1<<button)))
-            {
-                debounce[i]=1;
-            }
-            else
-            {
-                debounce[i]=0;
-            }
-
-              if(debounce[i] == 1)
-            {
-                 check++;
-            }
-
-            _delay_ms(10);
+            *(input->is_active) = TRUE;
+            input->counter = 0;
         }
-
-        if(check == 8)
-        {
-            return 1;
-        }
-
-    return 0;
+    }
+    else
+    {
+        input->counter = 0;
+    }
 }
-
 
 void switch_LED(char id, uint8_t state)
 {

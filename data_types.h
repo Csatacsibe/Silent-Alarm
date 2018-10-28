@@ -48,7 +48,6 @@ typedef struct device_status
     uint8_t  GSM_pwr;         // GSM power status
     uint8_t  GSM_configured;
     uint8_t  LCD_configured;
-    uint32_t millis;
     uint8_t  is_date_displayed;
 }device_status_t;
 
@@ -62,16 +61,21 @@ typedef struct timer_variables
 
 typedef struct interrupt_flags
 {
-    uint8_t  butt;
-    uint8_t  sw;
-    uint8_t  GSM;
-    uint8_t* timer1;
+    uint8_t butt;
+    uint8_t sw;
+    uint8_t GSM;
+    uint8_t timeout;
+    uint8_t butt1;
+    uint8_t butt2;
 }interrupt_flags_t;
 
-typedef struct alarms
+typedef struct input
 {
-   uint8_t uart_buffer_full;
-}alarms_t;
+    uint8_t counter;
+    uint8_t pin;
+    volatile uint8_t* port;
+    uint8_t* is_active;
+}input_t;
 
 typedef struct SMS
 {

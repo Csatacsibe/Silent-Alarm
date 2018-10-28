@@ -97,6 +97,8 @@ extern volatile uart_rx_t         GSM_uart;     // UART buffer variables
 extern SMS_t                      message;
 extern date_t                     date;
 extern uint8_t                    new_msg_received;
+extern volatile input_t           button1;
+extern volatile input_t           button2;
 
 /*   periphery init functions   */
 void          init_board(void); // buttons, switches, buzzer, LEDs,
@@ -111,6 +113,7 @@ void          PC_send_int(uint8_t num);
 
 void          print(periphery_t target, const char *fmt, ...);
 
+void          debounce_input(input_t* button);
 void          set_time_out(uint8_t value);
 void          init_global_variables();
 void          interrupt_handler(uint8_t* flag, void (*handler_func)(void));
