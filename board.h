@@ -99,11 +99,10 @@ extern date_t                     date;
 extern uint8_t                    new_msg_received;
 extern volatile input_t           button1;
 extern volatile input_t           button2;
+extern volatile input_t           sensor1;
 
 /*   periphery init functions   */
 void          init_board(void); // buttons, switches, buzzer, LEDs,
-
-uint8_t       button(char button);
 
 void          switch_LED(char id, uint8_t state);
 void          switch_buzzer(uint8_t state);

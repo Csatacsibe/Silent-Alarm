@@ -10,14 +10,16 @@ uint8_t                    new_msg_received = FALSE;
 volatile input_t           button1;
 volatile input_t           button2;
 
+volatile input_t           sensor1;
+
 ISR(ALARM_BUTT_ISR)
 {
-    int_flags.butt = TRUE;
+    int_flags.alarm_button = TRUE;
 }
 
 ISR(ALARM_SW_ISR)
 {
-    int_flags.sw = TRUE;
+    int_flags.alarm_sw = TRUE;
 }
 
 ISR(GSM_RI_ISR)
@@ -38,8 +40,7 @@ ISR(TIMER1_OVF_vect)
 
 ISR(TIMER0_COMP_vect)
 {
-    PORTC ^= (1<<HEADER0);
-
+    debounce_input(&sensor1);
     debounce_input(&button1);
     debounce_input(&button2);
 }
@@ -92,7 +93,7 @@ void alarm_button_handler()
 
 void button1_handler()
 {
-    switch_LED(LED1, TOGGLE);
+    switch_LCD();
 }
 
 void button2_handler()
@@ -100,12 +101,17 @@ void button2_handler()
     switch_LED(LED2, TOGGLE);
 }
 
+void sensor1_handler()
+{
+    switch_LED(LED2, TOGGLE);
+    switch_LED(LED1, TOGGLE);
+}
+
 int main(void)
 {
     init_board();
     init_LCD();
     init_GSM();
-
     
     sei();
     init_global_variables();
@@ -124,11 +130,12 @@ int main(void)
 
         }
 
-        interrupt_handler((uint8_t*)&int_flags.butt, alarm_button_handler);
-        interrupt_handler((uint8_t*)&int_flags.sw, switch_GSM);
+        interrupt_handler((uint8_t*)&int_flags.alarm_button, alarm_button_handler);
+        interrupt_handler((uint8_t*)&int_flags.alarm_sw, switch_GSM);
         interrupt_handler((uint8_t*)&int_flags.GSM, gsm_ri_handler);
-        interrupt_handler((uint8_t*)&int_flags.butt1, button1_handler);
-        interrupt_handler((uint8_t*)&int_flags.butt2, button2_handler);
+        interrupt_handler((uint8_t*)&int_flags.button1, button1_handler);
+        interrupt_handler((uint8_t*)&int_flags.button2, button2_handler);
+        interrupt_handler((uint8_t*)&int_flags.sensor1, sensor1_handler);
     }
     return 0;
 }

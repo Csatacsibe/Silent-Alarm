@@ -61,12 +61,13 @@ typedef struct timer_variables
 
 typedef struct interrupt_flags
 {
-    uint8_t butt;
-    uint8_t sw;
+    uint8_t alarm_button;
+    uint8_t alarm_sw;
     uint8_t GSM;
     uint8_t timeout;
-    uint8_t butt1;
-    uint8_t butt2;
+    uint8_t button1;
+    uint8_t button2;
+    uint8_t sensor1;
 }interrupt_flags_t;
 
 typedef struct input

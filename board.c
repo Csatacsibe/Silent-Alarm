@@ -15,6 +15,7 @@ void init_board()
     DDRG &= ~(1<<BUTT1) & ~(1<<BUTT2);
     DDRB |= (1<<BUZZER);
     DDRC |= (1<<HEADER0) | (1<<HEADER1);
+    DDRC &= ~(1<<HEADER7);
 
     TCCR1B |=(1<<CS10);               // time-out timer, no prescale
 
@@ -98,19 +99,25 @@ void init_global_variables()
     button1.counter   = 0;
     button1.pin       = BUTT1;
     button1.port      = &PING;
-    button1.is_active = &(int_flags.butt1);
+    button1.is_active = &(int_flags.button1);
 
     button2.counter   = 0;
     button2.pin       = BUTT2;
     button2.port      = &PING;
-    button2.is_active = &(int_flags.butt2);
+    button2.is_active = &(int_flags.button2);
 
-    int_flags.butt   = FALSE;
-    int_flags.sw     = FALSE;
-    int_flags.GSM    = FALSE;
-    int_flags.timeout = FALSE;
-    int_flags.butt1   = FALSE;
-    int_flags.butt2   = FALSE;
+    sensor1.counter   = 0;
+    sensor1.pin       = HEADER7;
+    sensor1.port      = &PINC;
+    sensor1.is_active = &(int_flags.sensor1);
+
+    int_flags.alarm_button = FALSE;
+    int_flags.alarm_sw     = FALSE;
+    int_flags.GSM          = FALSE;
+    int_flags.timeout      = FALSE;
+    int_flags.button1      = FALSE;
+    int_flags.button2      = FALSE;
+    int_flags.sensor1      = FALSE;
 
     GSM_uart.buffer[0]  = '\0';
     GSM_uart.begin      = '\n';
