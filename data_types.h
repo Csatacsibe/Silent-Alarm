@@ -65,18 +65,7 @@ typedef struct interrupt_flags
     uint8_t alarm_sw;
     uint8_t GSM;
     uint8_t timeout;
-    uint8_t button1;
-    uint8_t button2;
-    uint8_t sensor1;
 }interrupt_flags_t;
-
-typedef struct input
-{
-    uint8_t counter;
-    uint8_t pin;
-    volatile uint8_t* port;
-    uint8_t* is_active;
-}input_t;
 
 typedef struct SMS
 {

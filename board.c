@@ -1,10 +1,24 @@
 #include "board.h"
 
+typedef struct input
+{
+    uint16_t counter;
+    uint8_t pin;
+    volatile uint8_t* port;
+    uint8_t polarity;
+    uint8_t is_active;
+    uint16_t threshold;
+    void (*handler_func)(void);
+}input_t;
+
 static void init_timer0();
 static void init_PC_uart();
 static void PC_uart_transmit(unsigned char data);
 static unsigned char PC_uart_recieve();
 static void vprint(periphery_t target, const char *fmt, va_list argp);
+
+static volatile input_t inputs[10];
+static uint8_t registered_inputs = 0;
 
 void init_board()
 {
@@ -90,34 +104,16 @@ static void init_timer0()
 //
 ///////////////////////////////////////////////////////////////
 
-void init_global_variables()
+void init_global_variables(void)
 {
     timer1.ovf_cnt  = 0;
     timer1.cnt_max  = 0;
     timer1.time_out = FALSE;
 
-    button1.counter   = 0;
-    button1.pin       = BUTT1;
-    button1.port      = &PING;
-    button1.is_active = &(int_flags.button1);
-
-    button2.counter   = 0;
-    button2.pin       = BUTT2;
-    button2.port      = &PING;
-    button2.is_active = &(int_flags.button2);
-
-    sensor1.counter   = 0;
-    sensor1.pin       = HEADER7;
-    sensor1.port      = &PINC;
-    sensor1.is_active = &(int_flags.sensor1);
-
     int_flags.alarm_button = FALSE;
     int_flags.alarm_sw     = FALSE;
     int_flags.GSM          = FALSE;
     int_flags.timeout      = FALSE;
-    int_flags.button1      = FALSE;
-    int_flags.button2      = FALSE;
-    int_flags.sensor1      = FALSE;
 
     GSM_uart.buffer[0]  = '\0';
     GSM_uart.begin      = '\n';
@@ -144,21 +140,55 @@ void init_global_variables()
     message.slot = 0;
 }
 
-void debounce_input(input_t* input)
+uint8_t register_input(uint8_t* port, uint8_t pin, uint8_t polarity, uint16_t threshold, void (*handler_func)(void))
 {
-    if (((*(input->port)) & (1<<input->pin))) 
+    if (registered_inputs > 9)
     {
-        input->counter++;
-        if (100 == input->counter)
+        return FALSE;
+    }
+
+    inputs[registered_inputs].counter = 0;
+    inputs[registered_inputs].is_active = FALSE;
+    inputs[registered_inputs].threshold = threshold;
+    inputs[registered_inputs].pin = pin;
+    inputs[registered_inputs].port = port;
+    inputs[registered_inputs].polarity = polarity;
+    inputs[registered_inputs].handler_func = handler_func;
+    registered_inputs++;
+
+    return TRUE;
+}
+
+void poll_inputs(void)
+{
+    uint8_t i;
+    for(i = 0; i < registered_inputs; i++)
+    {
+        uint8_t pin_state = ((*(inputs[i].port)) & (1<<inputs[i].pin)) ? 1 : 0;
+
+        if (pin_state == inputs[i].polarity)
         {
-            *(input->is_active) = TRUE;
-            input->counter = 0;
+            inputs[i].counter++;
+            if (inputs[i].threshold == inputs[i].counter)
+            {
+                inputs[i].is_active = TRUE;
+                inputs[i].counter = 0;
+            }
+        }
+        else
+        {
+            inputs[i].counter = 0;
         }
     }
-    else
+}
+
+void handle_inputs(void)
+{
+    uint8_t i;
+    for(i = 0; i < registered_inputs; i++)
     {
-        input->counter = 0;
-    }
+        interrupt_handler((uint8_t*)(&(inputs[i].is_active)), inputs[i].handler_func);
+    }    
 }
 
 void switch_LED(char id, uint8_t state)

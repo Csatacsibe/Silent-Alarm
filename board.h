@@ -97,24 +97,24 @@ extern volatile uart_rx_t         GSM_uart;     // UART buffer variables
 extern SMS_t                      message;
 extern date_t                     date;
 extern uint8_t                    new_msg_received;
-extern volatile input_t           button1;
-extern volatile input_t           button2;
-extern volatile input_t           sensor1;
 
 /*   periphery init functions   */
-void          init_board(void); // buttons, switches, buzzer, LEDs,
+void init_board(void); // buttons, switches, buzzer, LEDs,
 
-void          switch_LED(char id, uint8_t state);
-void          switch_buzzer(uint8_t state);
+void switch_LED(char id, uint8_t state);
+void switch_buzzer(uint8_t state);
 
-void          PC_send_str(char* cmd);
-void          PC_send_int(uint8_t num);
+void PC_send_str(char* cmd);
+void PC_send_int(uint8_t num);
 
-void          print(periphery_t target, const char *fmt, ...);
+void print(periphery_t target, const char *fmt, ...);
 
-void          debounce_input(input_t* button);
-void          set_time_out(uint8_t value);
-void          init_global_variables();
-void          interrupt_handler(uint8_t* flag, void (*handler_func)(void));
+void set_time_out(uint8_t value);
+void init_global_variables(void);
+void interrupt_handler(uint8_t* flag, void (*handler_func)(void));
+
+uint8_t register_input(uint8_t* port, uint8_t pin, uint8_t polarity, uint16_t threshold, void (*handler_func)(void));
+void poll_inputs(void);
+void handle_inputs(void);
 
 #endif

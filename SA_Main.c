@@ -7,10 +7,6 @@ volatile uart_rx_t         GSM_uart;
 SMS_t                      message;
 date_t                     date;
 uint8_t                    new_msg_received = FALSE;
-volatile input_t           button1;
-volatile input_t           button2;
-
-volatile input_t           sensor1;
 
 ISR(ALARM_BUTT_ISR)
 {
@@ -40,9 +36,7 @@ ISR(TIMER1_OVF_vect)
 
 ISR(TIMER0_COMP_vect)
 {
-    debounce_input(&sensor1);
-    debounce_input(&button1);
-    debounce_input(&button2);
+    poll_inputs();
 }
 
 ISR(USART1_RX_vect)
@@ -103,8 +97,7 @@ void button2_handler()
 
 void sensor1_handler()
 {
-    switch_LED(LED2, TOGGLE);
-    switch_LED(LED1, TOGGLE);
+    switch_buzzer(TOGGLE);
 }
 
 int main(void)
@@ -115,6 +108,9 @@ int main(void)
     
     sei();
     init_global_variables();
+    register_input(&PING, BUTT1, 1, 150, button1_handler);
+    register_input(&PING, BUTT2, 1, 150, button2_handler);
+    register_input(&PINC, HEADER7, 1, 5000, sensor1_handler);
 
     switch_LED(LED1, ON);
 
@@ -133,9 +129,7 @@ int main(void)
         interrupt_handler((uint8_t*)&int_flags.alarm_button, alarm_button_handler);
         interrupt_handler((uint8_t*)&int_flags.alarm_sw, switch_GSM);
         interrupt_handler((uint8_t*)&int_flags.GSM, gsm_ri_handler);
-        interrupt_handler((uint8_t*)&int_flags.button1, button1_handler);
-        interrupt_handler((uint8_t*)&int_flags.button2, button2_handler);
-        interrupt_handler((uint8_t*)&int_flags.sensor1, sensor1_handler);
+        handle_inputs();
     }
     return 0;
 }
