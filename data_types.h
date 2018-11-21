@@ -19,7 +19,7 @@ typedef enum periphery
     LCD
 }periphery_t;
 
-typedef struct date
+typedef struct date_t
 {
     uint8_t year;
     uint8_t month;
