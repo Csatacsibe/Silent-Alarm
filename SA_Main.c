@@ -82,7 +82,8 @@ void gsm_ri_handler()
 
 void alarm_button_handler()
 {
-	switch_LED(LED2, TOGGLE);
+    set_alarm_status(OFF);
+    switch_LED(LED2, OFF);
 }
 
 void button1_handler()
@@ -92,12 +93,28 @@ void button1_handler()
 
 void button2_handler()
 {
-    switch_LED(LED2, TOGGLE);
+    set_alarm_enabled(is_alarm_enabled() ? FALSE : TRUE);
+    display_alarm_enabled();
 }
 
-void sensor1_handler()
+void sensor1_on_handler()
 {
-    switch_buzzer(TOGGLE);
+    if (FALSE == get_door_state())
+    {
+        set_door_state(TRUE);
+    }
+    display_door_state();
+    switch_buzzer(OFF);
+}
+
+void sensor1_off_handler()
+{
+    if (TRUE == get_door_state())
+    {
+        set_door_state(FALSE);
+    }
+    display_door_state();
+    switch_buzzer(OFF);
 }
 
 int main(void)
@@ -108,11 +125,17 @@ int main(void)
     
     sei();
     init_global_variables();
+    init_alarm_handler();
+
     register_input(&PING, BUTT1, 1, 150, button1_handler);
     register_input(&PING, BUTT2, 1, 150, button2_handler);
-    register_input(&PINC, HEADER7, 1, 5000, sensor1_handler);
+    register_input(&PINC, HEADER7, 1, 400, sensor1_on_handler);
+    register_input(&PINC, HEADER7, 0, 150, sensor1_off_handler);
 
     switch_LED(LED1, ON);
+    switch_LCD();
+
+    display_alarm_enabled();
 
     while(1)
     {
@@ -125,6 +148,12 @@ int main(void)
         {
 
         }
+
+        if (TRUE == get_door_state() && TRUE == is_alarm_enabled())
+        {
+            set_alarm_status(ON);
+            switch_LED(LED2, ON);
+        } 
 
         interrupt_handler((uint8_t*)&int_flags.alarm_button, alarm_button_handler);
         interrupt_handler((uint8_t*)&int_flags.alarm_sw, switch_GSM);

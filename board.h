@@ -14,6 +14,7 @@
 #include "GSM.h"
 #include "LCD.h"
 #include "time.h"
+#include "alarm.h"
 #include "data_types.h"
 #include "constants.h"
 
